@@ -9,6 +9,10 @@ const clearCourseButton = document.getElementById("clear-button");
 
 const COURSES_KEY = "courses";
 
+let todoInputList = [];
+
+const toDos = [];
+
 
 function handleCoursesSubmit(event) {
     event.preventDefault();
@@ -18,18 +22,67 @@ function handleCoursesSubmit(event) {
     window.location.reload();
 }
 
+function saveTodos() {
+    localStorage.setItem("todos", JSON.stringify(toDos));
+}
 
-// function paintCourses() {
-//     for (let i = 0; i < 4; i++) {
-//         const li = document.createElement("li");
-//         const span = document.createElement("span");
-//         li.appendChild(span);
-//         li.setAttribute("style", "display:inline");
-//         span.innerText = JSON.parse(localStorage[COURSES_KEY])[i];
-//         coursesList.appendChild(li);
-//     }
+function createToDo(col) {
 
-// }
+    // create todo html
+    let toDoForm = document.createElement("form");
+    let toDoInput = document.createElement("input");
+    let toDoList = document.createElement("ul");
+
+    toDoForm.setAttribute("id", "todo-form");
+
+    toDoInput.setAttribute("type", "text");
+    toDoInput.setAttribute("placeholder", "Write a To Do and Press Enter");
+
+
+    toDoList.setAttribute("id", "todo-list");
+
+    col.appendChild(toDoForm);
+    toDoForm.appendChild(toDoInput);
+    col.appendChild(toDoList);
+
+    todoInputList.push(toDoInput);
+
+    // add todo event listener
+    toDoForm.addEventListener("submit", handleToDoSubmit);
+}
+
+
+function paintToDo(newTodo, event) {
+    let li = document.createElement("li");
+    let span = document.createElement("span");
+    span.innerText = newTodo;
+    const button = document.createElement("button");
+    button.innerText = "x";
+    button.addEventListener("click", deleteToDo);
+    li.appendChild(span);
+    li.appendChild(button);
+    let toDoList = event.target.nextSibling;
+    toDoList.appendChild(li);
+}
+
+function handleToDoSubmit(event) {
+    event.preventDefault();
+    // add how to access the input
+    let toDoInput = event.target[0];
+    let newTodo = toDoInput.value;
+    toDoInput.value = "";
+    toDos.push(newTodo);
+    paintToDo(newTodo, event);
+    saveTodos();
+}
+
+
+function deleteToDo(event) {
+    const li = event.target.parentElement;
+    li.remove();
+}
+
+
 
 function paintCourses() {
     const container = document.createElement("div");
@@ -41,12 +94,17 @@ function paintCourses() {
     container.appendChild(row);
 
     for (let i = 0; i < 4; i++) {
+        // create column for courses
         const col = document.createElement("div");
         col.innerText = JSON.parse(localStorage[COURSES_KEY])[i];
         col.classList.add("col");
         col.classList.add("centerText")
         row.appendChild(col);
 
+        // add to do list for courses
+        createToDo(col);
+
+        // add an event listener for each todo lists
     }
 
 }
@@ -57,6 +115,7 @@ function handleClearCourses() {
     window.location.reload();
 
 }
+
 
 clearCourseButton.addEventListener("click", handleClearCourses);
 
