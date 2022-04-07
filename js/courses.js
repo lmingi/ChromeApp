@@ -8,10 +8,12 @@ const coursesList = document.getElementById("courses-list");
 const clearCourseButton = document.getElementById("clear-button");
 
 const COURSES_KEY = "courses";
+const TODOS_KEY = "todos";
 
 let todoInputList = [];
 
 const toDos = [];
+
 
 
 function handleCoursesSubmit(event) {
@@ -23,7 +25,7 @@ function handleCoursesSubmit(event) {
 }
 
 function saveTodos() {
-    localStorage.setItem("todos", JSON.stringify(toDos));
+    localStorage.setItem(TODOS_KEY, JSON.stringify(toDos));
 }
 
 function createToDo(col) {
@@ -72,6 +74,7 @@ function handleToDoSubmit(event) {
     let newTodo = toDoInput.value;
     toDoInput.value = "";
     toDos.push(newTodo);
+    console.log(event);
     paintToDo(newTodo, event);
     saveTodos();
 }
@@ -103,8 +106,6 @@ function paintCourses() {
 
         // add to do list for courses
         createToDo(col);
-
-        // add an event listener for each todo lists
     }
 
 }
@@ -129,3 +130,14 @@ if (savedCourses == null) {
     paintCourses(savedCourses);
 }
 
+
+
+const savedToDos = localStorage.getItem(TODOS_KEY);
+
+if (savedToDos !== null) {
+    const parsedToDos = JSON.parse(savedToDos);
+    console.log(parsedToDos);
+    for (let i = 0; i < parsedToDos.length; i++) {
+        paintToDo(parsedToDos[i]);
+    }
+}
