@@ -28,14 +28,14 @@ function saveTodos() {
     localStorage.setItem(TODOS_KEY, JSON.stringify(toDos));
 }
 
-function createToDo(col) {
+function createToDo(col, i) {
 
     // create todo html
     let toDoForm = document.createElement("form");
     let toDoInput = document.createElement("input");
     let toDoList = document.createElement("ul");
 
-    toDoForm.setAttribute("id", "todo-form");
+    toDoForm.setAttribute("id", `todo-form ${i + 1}`);
 
     toDoInput.setAttribute("type", "text");
     toDoInput.setAttribute("placeholder", "Write a To Do and Press Enter");
@@ -67,14 +67,26 @@ function paintToDo(newTodo, event) {
     toDoList.appendChild(li);
 }
 
+function paintSavedToDo(newTodo, toDoNum) {
+    let li = document.createElement("li");
+    let span = document.createElement("span");
+    span.innerText = newTodo;
+    const button = document.createElement("button");
+    button.innerText = "x";
+    button.addEventListener("click", deleteToDo);
+    li.appendChild(span);
+    li.appendChild(button);
+    let toDoList = document.getElementById(`todo-form ${toDoNum}`).nextSibling;
+    toDoList.appendChild(li);
+}
+
 function handleToDoSubmit(event) {
     event.preventDefault();
     // add how to access the input
     let toDoInput = event.target[0];
     let newTodo = toDoInput.value;
     toDoInput.value = "";
-    toDos.push(newTodo);
-    console.log(event);
+    toDos.push(newTodo, event.target.getAttribute("id")[10]);
     paintToDo(newTodo, event);
     saveTodos();
 }
@@ -105,7 +117,7 @@ function paintCourses() {
         row.appendChild(col);
 
         // add to do list for courses
-        createToDo(col);
+        createToDo(col, i);
     }
 
 }
@@ -137,7 +149,7 @@ const savedToDos = localStorage.getItem(TODOS_KEY);
 if (savedToDos !== null) {
     const parsedToDos = JSON.parse(savedToDos);
     console.log(parsedToDos);
-    for (let i = 0; i < parsedToDos.length; i++) {
-        paintToDo(parsedToDos[i]);
+    for (let i = 0; i < parsedToDos.length; i += 2) {
+        paintSavedToDo(parsedToDos[i], parseInt(parsedToDos[i + 1]));
     }
 }
