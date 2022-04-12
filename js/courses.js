@@ -12,7 +12,9 @@ const TODOS_KEY = "todos";
 
 let todoInputList = [];
 
-const toDos = [];
+let toDos = [];
+
+const savedToDos = localStorage.getItem(TODOS_KEY);
 
 
 
@@ -51,6 +53,7 @@ function createToDo(col, i) {
 
     // add todo event listener
     toDoForm.addEventListener("submit", handleToDoSubmit);
+
 }
 
 
@@ -94,6 +97,14 @@ function handleToDoSubmit(event) {
 
 function deleteToDo(event) {
     const li = event.target.parentElement;
+    for (let i = 0; i < toDos.length; i = i + 2) {
+        if (toDos[i] == li.firstChild.innerText) {
+            toDos = toDos.slice(0, i).concat(toDos.slice(i + 2, toDos.length))
+            console.log(toDos);
+            break;
+        }
+    }
+    saveTodos();
     li.remove();
 }
 
@@ -119,6 +130,8 @@ function paintCourses() {
         // add to do list for courses
         createToDo(col, i);
     }
+    clearCourseButton.classList.toggle("hidden")
+
 
 }
 
@@ -143,13 +156,15 @@ if (savedCourses == null) {
 }
 
 
-
-const savedToDos = localStorage.getItem(TODOS_KEY);
-
 if (savedToDos !== null) {
     const parsedToDos = JSON.parse(savedToDos);
-    console.log(parsedToDos);
+
+    for (let i = 0; i < parsedToDos.length; i++) {
+        toDos.push(parsedToDos[i]);
+    }
+
     for (let i = 0; i < parsedToDos.length; i += 2) {
         paintSavedToDo(parsedToDos[i], parseInt(parsedToDos[i + 1]));
     }
+
 }
